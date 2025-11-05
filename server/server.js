@@ -57,9 +57,13 @@ app.use(passport.session());
 app.use("/auth", authRoutes);
 app.use("/api/images", imageRoutes);
 
-// Catch-all route to handle React Router
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+// Catch-all handler to serve React app for non-API routes
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/auth')) {
+    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+  } else {
+    next();
+  }
 });
 
 const PORT = process.env.PORT || 5000;
