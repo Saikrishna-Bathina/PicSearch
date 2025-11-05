@@ -6,6 +6,9 @@ import MongoStore from "connect-mongo";
 import passport from "passport";
 import cors from "cors";
 
+import path from "path";
+import { fileURLToPath } from "url";
+
 import "./configs/passport.js"; 
 import authRoutes from "./routes/authRoutes.js";
 import imageRoutes from "./routes/imageRoutes.js";
@@ -21,6 +24,20 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://picsearch-app.onrender.com",
 ];
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from client build
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// Catch-all route to handle React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
+
+
 
 app.use(
   cors({
