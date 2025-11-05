@@ -33,7 +33,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // Catch-all route to handle React Router
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
