@@ -9,7 +9,7 @@ import User from "../models/user.js";
 const isProduction = process.env.NODE_ENV === "production";
 
 const BACKEND_URL = isProduction
-  ? "https://picsearch-server.onrender.com"
+  ? "https://picsearch-3knr.onrender.com"
   : "http://localhost:5000";
 
 
