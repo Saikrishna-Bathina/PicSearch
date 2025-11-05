@@ -5,6 +5,14 @@ import { Strategy as FacebookStrategy } from "passport-facebook";
 import dotenv from "dotenv"; 
 import User from "../models/user.js";
 
+
+const isProduction = process.env.NODE_ENV === "production";
+
+const BACKEND_URL = isProduction
+  ? "https://picsearch-server.onrender.com"
+  : "http://localhost:5000";
+
+
 dotenv.config();
 
 passport.serializeUser((user, done) => done(null, user.id));
@@ -19,7 +27,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/google/callback",
+      callbackURL: `${BACKEND_URL}/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -55,7 +63,7 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/github/callback",
+      callbackURL: `${BACKEND_URL}/auth/github/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -92,7 +100,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/facebook/callback",
+      callbackURL: `${BACKEND_URL}/auth/facebook/callback`,
       profileFields: ["id", "displayName", "emails", "photos"],
     },
     async (accessToken, refreshToken, profile, done) => {

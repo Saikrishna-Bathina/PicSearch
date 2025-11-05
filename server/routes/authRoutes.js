@@ -1,15 +1,21 @@
 import express from "express";
 import passport from "passport";
 
+const FRONTEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://picsearch.onrender.com"
+    : "http://localhost:5173";
+
+
 const router = express.Router(); 
 
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
-// Google callback
+// Google callback 
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: "http://localhost:5173/dashboard", 
+    successRedirect: `${FRONTEND_URL}/dashboard`, 
     failureRedirect: "/auth/failure",
   })
 );
@@ -21,7 +27,7 @@ router.get("/github", passport.authenticate("github", { scope: ["user:email", "r
 router.get(
   "/github/callback",
   passport.authenticate("github", {
-    successRedirect: "http://localhost:5173/dashboard",
+    successRedirect: `${FRONTEND_URL}/dashboard`,
     failureRedirect: "/auth/failure",
   })
 );
@@ -33,7 +39,7 @@ router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }))
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", {
-    successRedirect: "http://localhost:5173/dashboard",
+    successRedirect: `${FRONTEND_URL}/dashboard`,
     failureRedirect: "/auth/failure",
   })
 );
@@ -60,7 +66,7 @@ router.get("/logout", (req, res) => {
       console.error("Logout error:", err);
       return res.status(500).json({ message: "Logout failed" });
     }
-    res.redirect("http://localhost:5173");
+    res.redirect(`${FRONTEND_URL}`);
   });
 });
 
