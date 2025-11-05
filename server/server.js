@@ -7,6 +7,7 @@ import passport from "passport";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process"; // For building the client
 
 import "./configs/passport.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -14,16 +15,34 @@ import imageRoutes from "./routes/imageRoutes.js";
 
 // Load environment variables based on NODE_ENV
 dotenv.config({
-path: process.env.NODE_ENV === "production" ? ".env.production" : ".env.development",
+  path: process.env.NODE_ENV === "production" ? ".env.production" : ".env.development",
 });
 
 const app = express();
 connectDB();
 
+// Build the client in production
+if (process.env.NODE_ENV === "production") {
+  console.log("Building client...");
+  try {
+    execSync("cd ../client && npm run build", { stdio: "inherit" });
+    console.log("Client built successfully.");
+  } catch (error) {
+    console.error("Failed to build client:", error);
+    process.exit(1);
+  }
+}
+
 // Allowed CORS origins
+const isProduction = process.env.NODE_ENV === "production";
+const BACKEND_URL = isProduction
+  ? "https://picsearch-3knr.onrender.com"
+  : "http://localhost:5000";
+
 const allowedOrigins = [
-"http://localhost:5173",
-"[https://picsearch-app.onrender.com](https://picsearch-app.onrender.com)",
+  "http://localhost:5173", // Development client
+  "https://picsearch-app.onrender.com", // Production client (if separate)
+  BACKEND_URL, // Allow the backend itself for any internal requests
 ];
 
 app.use(cors({ origin: allowedOrigins, credentials: true }));
@@ -31,12 +50,12 @@ app.use(express.json());
 
 // Session setup
 app.use(
-session({
-secret: process.env.SESSION_SECRET,
-resave: false,
-saveUninitialized: false,
-store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-})
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+  })
 );
 
 // Passport setup
@@ -55,11 +74,11 @@ app.use(express.static(clientBuildPath));
 
 // Express 5-safe catch-all route for React Router
 app.use((req, res, next) => {
-if (req.method === "GET" && !req.path.startsWith("/api") && !req.path.startsWith("/auth")) {
-res.sendFile(path.join(clientBuildPath, "index.html"));
-} else {
-next();
-}
+  if (req.method === "GET" && !req.path.startsWith("/api") && !req.path.startsWith("/auth")) {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  } else {
+    next();
+  }
 });
 
 // Start server
