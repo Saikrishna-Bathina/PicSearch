@@ -19,7 +19,7 @@ connectDB();
 // Middlewares
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://picsearch.onrender.com",
+  "https://picsearch-app.onrender.com",
 ];
 
 app.use(
