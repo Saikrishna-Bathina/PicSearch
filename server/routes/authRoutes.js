@@ -3,7 +3,7 @@ import passport from "passport";
 
 const FRONTEND_URL =
   process.env.NODE_ENV === "production"
-    ? "https://picsearch.onrender.com"
+    ? "https://picsearch-app.onrender.com"
     : "http://localhost:5173";
 
 
